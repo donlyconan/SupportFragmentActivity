@@ -32,7 +32,6 @@ interface SwitchFragment {
     ) {
     }
 
-
     /**
      * Quay trở về fragment phía sau hoặc thoát ứng dụng nếu fragment đó là fragment cuối cùng
      * @return Unit
@@ -45,6 +44,7 @@ interface SwitchFragment {
      * @return Unit
      */
     fun setOnSwitchFragment(switch: SwitchFragment) {}
+
 
     /**
      *  Dùng để nhận dữ liệu từ một fragment được start trước đó

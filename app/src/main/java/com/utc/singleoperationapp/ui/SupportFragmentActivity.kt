@@ -1,16 +1,10 @@
 package com.gtvt.relaxgo.base.framework.ui
 
 import android.os.Bundle
-import android.util.Log
-import androidx.annotation.AnimRes
-import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * Lớp quản lý hoạt động của một activity
@@ -18,10 +12,9 @@ import kotlin.collections.HashMap
  * @since 03/02/2001
  */
 abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layoutId), Initialzation,
-    SwitchFragment {
+    SwitchFragment, FragmentManager.OnBackStackChangedListener {
 
-    private val mapRequest: HashMap<Int, Int> by lazy { HashMap<Int, Int>(10) }
-    private val stackFragment: Stack<Fragment> by lazy { Stack<Fragment>() }
+    private lateinit var listRequest: MutableList<Fragment>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +36,12 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
         }
     }
 
+    override fun initialize(bundle: Bundle?) {
+        super.initialize(bundle)
+        listRequest = ArrayList<Fragment>()
+        supportFragmentManager.addOnBackStackChangedListener(this)
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -60,6 +59,9 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
         val fragment = fragTaget.newInstance().apply {
             arguments = bundle
         }
+        supportFragmentManager.fragments.last().apply {
+            setTargetFragment(fragment, Int.MIN_VALUE)
+        }
         startFragment(fragment, fragTaget.name)
     }
 
@@ -68,12 +70,11 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
         requestCode: Int, fragTaget: Class<T>,
         bundle: Bundle?
     ) {
-        val preStart = supportFragmentManager.fragments.last()
-        mapRequest.put(preStart.hashCode(), requestCode)
+        val fragment = fragTaget.newInstance().apply { arguments = bundle }
 
-        val fragment = fragTaget.newInstance().apply {
-            arguments = bundle
-        }
+        val preFragment = supportFragmentManager.fragments.last()
+        listRequest.add(preFragment)
+        preFragment.setTargetFragment(fragment, requestCode)
         startFragment(fragment, fragTaget.name)
     }
 
@@ -88,22 +89,24 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
         }
     }
 
+    override fun onBackStackChanged() {
+        listRequest.removeAll { !supportFragmentManager.fragments.contains(it) }
+    }
+
+
+
 
     override fun popBackStack(resultCode: Int, bundle: Bundle?) {
         supportFragmentManager.apply {
-            if (fragments.size >= 1) {
-                popBackStackImmediate()
-                val lastFragment = fragments.last() as BaseFragment
-                val requestCode = mapRequest.get(lastFragment.hashCode())
+            popBackStackImmediate()
 
-                if (fragments.isEmpty()) {
-                    onBackPressed()
-                } else if (requestCode != null) {
-                    lastFragment.onFragmentResult(requestCode, resultCode, bundle)
-                    mapRequest.remove(lastFragment.hashCode())
-                }
-            } else {
+            val lastFragment = fragments.last() as BaseFragment
+            val requestCode = lastFragment.targetRequestCode
+
+            if (fragments.isEmpty()) {
                 onBackPressed()
+            } else if (requestCode != Int.MIN_VALUE) {
+                lastFragment.onFragmentResult(requestCode, resultCode, bundle)
             }
         }
     }

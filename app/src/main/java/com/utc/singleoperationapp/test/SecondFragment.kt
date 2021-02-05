@@ -1,6 +1,9 @@
 package com.utc.singleoperationapp.test
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.gtvt.relaxgo.base.framework.ui.BaseFragment
@@ -14,6 +17,10 @@ class SecondFragment : BaseFragment(R.layout.fragment_second), View.OnClickListe
     override fun initialize(bundle: Bundle?) {
         super.initialize(bundle)
         btnClose.setOnClickListener(this)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
 
         arguments?.getString("aaa")?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()

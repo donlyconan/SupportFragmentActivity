@@ -1,4 +1,6 @@
 package com.utc.singleoperationapp.ui
 
-class FragmentState {
+interface FragmentResult {
+
+
 }

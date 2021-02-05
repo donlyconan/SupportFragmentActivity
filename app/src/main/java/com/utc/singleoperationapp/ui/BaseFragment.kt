@@ -2,8 +2,8 @@ package com.gtvt.relaxgo.base.framework.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
+import java.lang.RuntimeException
 
 /**
  * Cài đặt các thiết lập mặc định cho một Fragment
@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
  */
 abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, SwitchFragment {
 
-    lateinit var switchFragment: SwitchFragment
+    lateinit var switch: SwitchFragment
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -22,29 +22,33 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (activity is SwitchFragment) {
-            switchFragment = activity as SwitchFragment
+            switch = activity as SwitchFragment
         } else {
-            throw Exception("Lỗi! Không tương thích.")
+            throw RuntimeException("Lỗi! Lớp không tương thích.")
         }
     }
 
 
-    override fun <T : Fragment> startFragment(fragTaget: Class<T>, bundle: Bundle?) =
-        switchFragment.startFragment(fragTaget, bundle)
+    override fun <T : Fragment> startFragment(fragTaget: Class<T>, bundle: Bundle?) {
+        switch.startFragment(fragTaget, bundle)
+    }
 
 
     override fun <T : Fragment> startFragmentForResult(
         requestCode: Int,
         fragTaget: Class<T>,
         bundle: Bundle?
-    ) = switchFragment.startFragmentForResult(requestCode, fragTaget, bundle)
+    ) {
+        switch.startFragmentForResult(requestCode, fragTaget, bundle)
+    }
 
 
-    override fun popBackStack(resultCode: Int, bundle: Bundle?) =
-        switchFragment.popBackStack(resultCode, bundle)
+    override fun popBackStack(resultCode: Int, bundle: Bundle?) {
+        switch.popBackStack(resultCode, bundle)
+    }
 
 
     override fun setOnSwitchFragment(switch: SwitchFragment) {
-        this.switchFragment = switch
+        this.switch = switch
     }
 }
