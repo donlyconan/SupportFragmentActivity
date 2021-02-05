@@ -1,17 +1,27 @@
 package com.gtvt.relaxgo.base.framework.ui
 
 import android.os.Bundle
+import android.util.Log
+import androidx.annotation.AnimRes
+import androidx.annotation.AnimatorRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
- * Lớp quản lý hoạt
+ * Lớp quản lý hoạt động của một activity
  * @author Donly Conan
  * @since 03/02/2001
  */
 abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layoutId), Initialzation,
     SwitchFragment {
+
+    private val mapRequest: HashMap<Int, Int> by lazy { HashMap<Int, Int>(10) }
+    private val stackFragment: Stack<Fragment> by lazy { Stack<Fragment>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,12 +29,17 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
         // Các khởi tạo truyền thống
         initialize(savedInstanceState)
 
-        // Đăng ký các sự kiên liên quan tới ViewModel
-        register(savedInstanceState)
-
         // Kiểm tra và đăng ký sự kiện nếu sự kiện chưa được đăng ký
         if (checkOrRegisterPermisstion()) {
             runOnIfHasPermission(savedInstanceState)
+        }
+
+        // Đăng ký các sự kiên liên quan tới ViewModel
+        register(savedInstanceState)
+
+        // Đăng ký fragment đầu tiên
+        if (savedInstanceState == null) {
+            startFragment(onCreateFirstFragment(), savedInstanceState)
         }
     }
 
@@ -40,31 +55,59 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
         }
     }
 
-
     override fun <T : Fragment> startFragment(fragTaget: Class<T>, bundle: Bundle?) {
         super.startFragment(fragTaget, bundle)
+        val fragment = fragTaget.newInstance().apply {
+            arguments = bundle
+        }
+        startFragment(fragment, fragTaget.name)
+    }
+
+
+    override fun <T : Fragment> startFragmentForResult(
+        requestCode: Int, fragTaget: Class<T>,
+        bundle: Bundle?
+    ) {
+        val preStart = supportFragmentManager.fragments.last()
+        mapRequest.put(preStart.hashCode(), requestCode)
+
+        val fragment = fragTaget.newInstance().apply {
+            arguments = bundle
+        }
+        startFragment(fragment, fragTaget.name)
+    }
+
+
+    private fun startFragment(fragment: Fragment, tag: String?) {
         supportFragmentManager.apply {
-            beginTransaction().replace(
-                getIdOfFrameLayout(),
-                fragTaget,
-                bundle,
-                fragTaget.simpleName
-            ).addToBackStack(fragTaget.name)
+            beginTransaction()
+                .add(getIdOfFrameLayout(), fragment, tag)
+                .replace(getIdOfFrameLayout(), fragment, tag)
+                .addToBackStack(tag)
                 .commit()
         }
     }
 
-    override fun popBackStack() {
+
+    override fun popBackStack(resultCode: Int, bundle: Bundle?) {
         supportFragmentManager.apply {
-            popBackStack()
-            val lastFragment = fragments.last()
-            if (fragments.isEmpty() || lastFragment == null) {
-                onBackPressed()
+            if (fragments.size >= 1) {
+                popBackStackImmediate()
+                val lastFragment = fragments.last() as BaseFragment
+                val requestCode = mapRequest.get(lastFragment.hashCode())
+
+                if (fragments.isEmpty()) {
+                    onBackPressed()
+                } else if (requestCode != null) {
+                    lastFragment.onFragmentResult(requestCode, resultCode, bundle)
+                    mapRequest.remove(lastFragment.hashCode())
+                }
             } else {
-//                lastFragment.onActivityResult(r)
+                onBackPressed()
             }
         }
     }
+
 
     /**
      * Các sự kiện đăng ký với model
@@ -93,4 +136,10 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
     @IdRes
     abstract fun getIdOfFrameLayout(): Int
 
+    /**
+     * Đăng ký fragment đầu tiên hiển thị trên giao diện
+     * @return BaseFragment
+     */
+    abstract fun onCreateFirstFragment(): BaseFragment
 }
+

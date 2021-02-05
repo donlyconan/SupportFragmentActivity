@@ -10,8 +10,7 @@ import androidx.fragment.app.Fragment
  * @author Donly Conan
  * @since 04/02/2021
  */
-abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation,
-    View.OnClickListener, SwitchFragment {
+abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, SwitchFragment {
 
     lateinit var switchFragment: SwitchFragment
 
@@ -20,20 +19,30 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation,
         initialize(savedInstanceState)
     }
 
-
-    override fun onClick(v: View?) {}
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (activity is SwitchFragment) {
             switchFragment = activity as SwitchFragment
+        } else {
+            throw Exception("Lỗi! Không tương thích.")
         }
     }
+
 
     override fun <T : Fragment> startFragment(fragTaget: Class<T>, bundle: Bundle?) =
         switchFragment.startFragment(fragTaget, bundle)
 
-    override fun popBackStack() = switchFragment.popBackStack()
+
+    override fun <T : Fragment> startFragmentForResult(
+        requestCode: Int,
+        fragTaget: Class<T>,
+        bundle: Bundle?
+    ) = switchFragment.startFragmentForResult(requestCode, fragTaget, bundle)
+
+
+    override fun popBackStack(resultCode: Int, bundle: Bundle?) =
+        switchFragment.popBackStack(resultCode, bundle)
+
 
     override fun setOnSwitchFragment(switch: SwitchFragment) {
         this.switchFragment = switch

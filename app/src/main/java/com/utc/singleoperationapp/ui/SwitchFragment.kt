@@ -1,5 +1,6 @@
 package com.gtvt.relaxgo.base.framework.ui
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 
@@ -18,21 +19,25 @@ interface SwitchFragment {
      */
     fun <T : Fragment> startFragment(fragTaget: Class<T>, bundle: Bundle? = null) {}
 
-
     /**
      * Đăng ký sự kiện callback khi bắt đầu một fragment khác
      * @param intent dữ liệu được truyền đi khi đăng ký fragment
      * @param requestCode mã code được đăng ký gọi đi
      * @return Unit
      */
-    fun <T : Fragment> startFragmentForResult(requestCode: Int, bundle: Bundle? = null) {}
+    fun <T : Fragment> startFragmentForResult(
+        requestCode: Int,
+        fragTaget: Class<T>,
+        bundle: Bundle? = null
+    ) {
+    }
 
 
     /**
      * Quay trở về fragment phía sau hoặc thoát ứng dụng nếu fragment đó là fragment cuối cùng
      * @return Unit
      */
-    fun popBackStack() {}
+    fun popBackStack(resultCode: Int = Int.MIN_VALUE, bundle: Bundle? = null) {}
 
     /**
      * Đăng ký sự kiện chuyển đổi giữa các fragment
@@ -42,10 +47,9 @@ interface SwitchFragment {
     fun setOnSwitchFragment(switch: SwitchFragment) {}
 
     /**
-     *  Dùng để nhận một intent được quăng sang từ một instance
+     *  Dùng để nhận dữ liệu từ một fragment được start trước đó
      *  @param Bundle Nơi chứa dữ liệu truyền vào
      *  @return Unit
      */
-    fun onAttack(bundle: Bundle?) {}
-
+    fun onFragmentResult(requestCode: Int, resultCode: Int, bundle: Bundle?) {}
 }
