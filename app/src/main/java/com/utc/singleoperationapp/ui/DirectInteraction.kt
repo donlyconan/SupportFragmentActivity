@@ -10,7 +10,7 @@ interface DirectInteraction {
      *  @param code: Là mã thông điệp được truyền tải
      *  @return Unit
      */
-    fun send(hashCode: Int, code: Int, bundle: Bundle?) {}
+    fun send(code: Int, bundle: Bundle?) {}
 
 
     /**
@@ -19,5 +19,5 @@ interface DirectInteraction {
      *  @param code: Là mã thông điệp được truyền tải
      *  @return Unit
      */
-    fun receive(hashCode: Int, code: Int, bundle: Bundle?) {}
+    fun receive(code: Int, bundle: Bundle?) {}
 }

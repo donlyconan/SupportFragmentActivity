@@ -1,6 +1,5 @@
 package com.utc.singleoperationapp.test
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -9,22 +8,55 @@ import com.gtvt.relaxgo.base.framework.ui.BaseFragment
 import com.utc.singleoperationapp.R
 import kotlinx.android.synthetic.main.fragment_first.*
 
-class FirstFragment: BaseFragment(R.layout.fragment_first), View.OnClickListener {
+class FirstFragment : BaseFragment(R.layout.fragment_first), View.OnClickListener {
+    companion object {
+        val REQUEST_CODE = 101
+        val EXTRA_DATA = "_data"
+    }
 
+    override fun onFragmentResult(requestCode: Int, resultCode: Int, bundle: Bundle?) {
+        super.onFragmentResult(requestCode, resultCode, bundle)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Toast.makeText(context, data?.getStringExtra("aaa"), Toast.LENGTH_SHORT ).show()
+        val message =
+            "request: $requestCode, result=$resultCode, data=${bundle?.getString(EXTRA_DATA)}"
+        show(message)
     }
 
     override fun initialize(bundle: Bundle?) {
         super.initialize(bundle)
-        btnOpen.setOnClickListener(this)
+        btnStartFrag.setOnClickListener(this)
+        btnStartFragForResult.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
-        startFragmentForResult(R.id.frameLayout, 100,SecondFragment::class.java, bundleOf("aaa" to "Hello!"))
+        when (v) {
+            btnStartFrag -> startFragment(
+                R.id.frameLayout,
+                SecondFragment::class.java,
+                bundleOf(EXTRA_DATA to "Hello Second Fragment []")
+            )
+            btnStartFragForResult -> startFragmentForResult(
+                R.id.frameLayout,
+                REQUEST_CODE,
+                SecondFragment::class.java,
+                bundleOf(EXTRA_DATA to "Hello Second Fragment [RESULT]")
+            )
+        }
     }
 
+
+    override fun receive(code: Int, bundle: Bundle?) {
+        super.receive(code, bundle)
+        val message = "Class: " + this::class.java.simpleName + "  data: " + bundle?.getString(
+            EXTRA_DATA
+        )
+        show(message)
+    }
+
+
+    fun show(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        textMessage2?.text = message
+    }
 
 }

@@ -17,7 +17,11 @@ interface SwitchFragment {
      *  @param intent Intent được đính kèm
      *  @return Unit
      */
-    fun <T : Fragment> startFragment(@IdRes frameId: Int, cls: Class<T>, bundle: Bundle? = null) {}
+    fun <T : Fragment> startFragment(
+        @IdRes frameId: Int,
+        cls: Class<T>,
+        bundle: Bundle? = null
+    ): T
 
     /**
      * Khởi tạo một bundle mới khi bắt đầu 1 fragment đã tồn tại thay vì khởi tạo lại fragment
@@ -37,8 +41,7 @@ interface SwitchFragment {
         requestCode: Int,
         cls: Class<T>,
         bundle: Bundle? = null
-    ) {
-    }
+    ): T
 
 
     /**

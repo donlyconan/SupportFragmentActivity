@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
 import com.gtvt.relaxgo.base.framework.ui.SupportFragmentActivity
 import com.gtvt.relaxgo.base.framework.ui.BaseFragment
 import com.utc.singleoperationapp.R
@@ -17,6 +18,12 @@ class MainActivity : SupportFragmentActivity(R.layout.activity_main),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        supportFragmentManager.commit {
+            replace(R.id.frameLayout, FirstFragment())
+            setReorderingAllowed(true)
+            addToBackStack(null)
+        }
     }
 
 

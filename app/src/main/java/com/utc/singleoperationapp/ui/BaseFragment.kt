@@ -1,9 +1,13 @@
 package com.gtvt.relaxgo.base.framework.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.IdRes
+import androidx.annotation.LongDef
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.utc.singleoperationapp.test.FifthFragment
 import com.utc.singleoperationapp.ui.DirectInteraction
 
 /**
@@ -30,9 +34,17 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
 
     /***************************************************************************************************/
 
-    override fun <T : Fragment> startFragment(@IdRes frameId: Int, cls: Class<T>, bundle: Bundle?) {
-        val fragment = cls.newInstance().apply { arguments = bundle }
+    override fun <T : Fragment> startFragment(
+        @IdRes frameId: Int,
+        cls: Class<T>,
+        bundle: Bundle?
+    ): T {
+        val fragment = cls.newInstance().apply {
+            arguments = bundle
+            (this as? BaseFragment)?.setDirectInteraction(this@BaseFragment)
+        }
         startNewFragment(frameId, fragment, cls.name)
+        return fragment
     }
 
 
@@ -41,13 +53,15 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
         requestCode: Int,
         cls: Class<T>,
         bundle: Bundle?
-    ) {
+    ): T {
         // Tạo instance cho fragment
         val fragment = cls.newInstance().apply {
             arguments = bundle
+            (this as? BaseFragment)?.setDirectInteraction(this@BaseFragment)
             setTargetFragment(this@BaseFragment, requestCode)
         }
         startNewFragment(frameId, fragment, cls.name)
+        return fragment
     }
 
     private fun startNewFragment(@IdRes frameId: Int, fragment: Fragment, tag: String) {
@@ -75,13 +89,13 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
         sfm.popBackStack()
     }
 
-    override fun send(hashCode: Int, code: Int, bundle: Bundle?) {
-        super.send(hashCode, code, bundle)
-        interaction?.receive(hashCode, code, bundle)
+    override fun send(code: Int, bundle: Bundle?) {
+        super.send(code, bundle)
+        this.interaction?.receive(code, bundle)
     }
 
 
-    fun setDirectInteraction(interaction: DirectInteraction) {
+    fun setDirectInteraction(interaction: DirectInteraction?) {
         this.interaction = interaction
     }
 

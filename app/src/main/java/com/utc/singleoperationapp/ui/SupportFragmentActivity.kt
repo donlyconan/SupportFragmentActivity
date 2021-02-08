@@ -17,17 +17,6 @@ import com.utc.singleoperationapp.ui.DirectInteraction
  */
 abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layoutId), Initialzation {
 
-    companion object {
-        val TAG_INIT_FRAGMENT = "init_fragment"
-        val FLAG_SINGLE_TOP = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val FLAG_CLEAR_TOP = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        val FLAG_CLEAR_TASK = Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val FLAG_NEW_TASK = Intent.FLAG_ACTIVITY_NEW_TASK
-    }
-
-    private val registerRequest: ArrayList<Fragment> by lazy { ArrayList() }
-    private val interactiveChannel: HashMap<Int, DirectInteraction> by lazy { HashMap() }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

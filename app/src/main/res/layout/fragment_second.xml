@@ -21,17 +21,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <Button
-        android:id="@+id/btnClose"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:onClick="onClick"
-        android:text="Close Activity 2"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textMessage" />
+        app:layout_constraintTop_toBottomOf="@+id/textMessage">
+
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_radius_8dp"
+            android:backgroundTint="#FFAB00"
+            android:onClick="onClick"
+            android:text="Close Second Activity" />
+
+        <Button
+            android:layout_marginTop="10dp"
+            android:id="@+id/btnSendData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_radius_8dp"
+            android:backgroundTint="#FFAB00"
+            android:onClick="onClick"
+            android:text="Send data to FirstFragment" />
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
