@@ -14,4 +14,10 @@ interface Initialzation {
      * @return Unit
      */
     fun initialize(bundle: Bundle?) {}
+
+    /**
+     * Đăng ký các sự kiện liên quan tới model
+     * @return Unit
+     */
+    fun register(bundle: Bundle?) {}
 }

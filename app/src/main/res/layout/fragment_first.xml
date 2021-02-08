@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#2962FF"
     android:orientation="vertical">
 
 
@@ -12,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:gravity="center"
         android:text="First fragment"
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,27 +21,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+    <Button
+        android:id="@+id/btnOpen"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="Open Activity 2"
+        android:onClick="onClick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textMessage">
+        app:layout_constraintTop_toBottomOf="@+id/textMessage" />
 
-        <Button
-            android:id="@+id/btnStartFragment"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:text="Start Second Fragment" />
-
-
-        <Button
-            android:id="@+id/btnStartFragmentForResult"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Start Second Fragment [Result]" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

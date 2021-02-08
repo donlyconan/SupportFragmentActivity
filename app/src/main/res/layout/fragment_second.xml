@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FF6D00"
     android:orientation="vertical">
 
 
@@ -12,18 +13,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Second fragment"
+        android:gravity="center"
+        android:text="Sencond fragment"
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <Button
         android:id="@+id/btnClose"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="Close Fragment"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:onClick="onClick"
+        android:text="Close Activity 2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

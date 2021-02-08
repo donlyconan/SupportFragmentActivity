@@ -1,20 +1,33 @@
 package com.gtvt.relaxgo.base.framework.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.commit
+import com.utc.singleoperationapp.test.FirstFragment
+import com.utc.singleoperationapp.ui.DirectInteraction
 
 /**
  * Lớp quản lý hoạt động của một activity
  * @author Donly Conan
  * @since 03/02/2001
  */
-abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layoutId), Initialzation,
-    SwitchFragment, FragmentManager.OnBackStackChangedListener {
+abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layoutId), Initialzation {
 
-    private lateinit var listRequest: MutableList<Fragment>
+    companion object {
+        val TAG_INIT_FRAGMENT = "init_fragment"
+        val FLAG_SINGLE_TOP = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val FLAG_CLEAR_TOP = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val FLAG_CLEAR_TASK = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val FLAG_NEW_TASK = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+
+    private val registerRequest: ArrayList<Fragment> by lazy { ArrayList() }
+    private val interactiveChannel: HashMap<Int, DirectInteraction> by lazy { HashMap() }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,17 +42,6 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
 
         // Đăng ký các sự kiên liên quan tới ViewModel
         register(savedInstanceState)
-
-        // Đăng ký fragment đầu tiên
-        if (savedInstanceState == null) {
-            startFragment(onCreateFirstFragment(), savedInstanceState)
-        }
-    }
-
-    override fun initialize(bundle: Bundle?) {
-        super.initialize(bundle)
-        listRequest = ArrayList<Fragment>()
-        supportFragmentManager.addOnBackStackChangedListener(this)
     }
 
 
@@ -53,70 +55,24 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
             runOnIfHasPermission()
         }
     }
-
-    override fun <T : Fragment> startFragment(fragTaget: Class<T>, bundle: Bundle?) {
-        super.startFragment(fragTaget, bundle)
-        val fragment = fragTaget.newInstance().apply {
-            arguments = bundle
-        }
-        supportFragmentManager.fragments.last().apply {
-            setTargetFragment(fragment, Int.MIN_VALUE)
-        }
-        startFragment(fragment, fragTaget.name)
-    }
-
-
-    override fun <T : Fragment> startFragmentForResult(
-        requestCode: Int, fragTaget: Class<T>,
-        bundle: Bundle?
-    ) {
-        val fragment = fragTaget.newInstance().apply { arguments = bundle }
-
-        val preFragment = supportFragmentManager.fragments.last()
-        listRequest.add(preFragment)
-        preFragment.setTargetFragment(fragment, requestCode)
-        startFragment(fragment, fragTaget.name)
-    }
+//
+//    override fun send(hashCode: Int, code: Int, bundle: Bundle?) {
+//        super.send(hashCode, code, bundle)
+//        val interaction =
+//            supportFragmentManager.findFragmentByTag(hashCode.toString()) as? DirectInteraction
+//        interaction?.receive(hashCode, code, bundle)
+//    }
+//
+//
+//    override fun receive(hashCode: Int, code: Int, bundle: Bundle?) {
+//        super.receive(hashCode, code, bundle)
+//        val interaction =
+//            supportFragmentManager.findFragmentByTag(hashCode.toString()) as? DirectInteraction
+//        interaction?.send(hashCode, code, bundle)
+//    }
 
 
-    private fun startFragment(fragment: Fragment, tag: String?) {
-        supportFragmentManager.apply {
-            beginTransaction()
-                .add(getIdOfFrameLayout(), fragment, tag)
-                .replace(getIdOfFrameLayout(), fragment, tag)
-                .addToBackStack(tag)
-                .commit()
-        }
-    }
-
-    override fun onBackStackChanged() {
-        listRequest.removeAll { !supportFragmentManager.fragments.contains(it) }
-    }
-
-
-
-
-    override fun popBackStack(resultCode: Int, bundle: Bundle?) {
-        supportFragmentManager.apply {
-            popBackStackImmediate()
-
-            val lastFragment = fragments.last() as BaseFragment
-            val requestCode = lastFragment.targetRequestCode
-
-            if (fragments.isEmpty()) {
-                onBackPressed()
-            } else if (requestCode != Int.MIN_VALUE) {
-                lastFragment.onFragmentResult(requestCode, resultCode, bundle)
-            }
-        }
-    }
-
-
-    /**
-     * Các sự kiện đăng ký với model
-     * @return Unit
-     */
-    open fun register(savedInstanceState: Bundle?) {}
+    /**********************************************************************************************/
 
 
     /**
@@ -132,17 +88,5 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
      */
     open fun checkOrRegisterPermisstion(): Boolean = true
 
-    /**
-     * Trả về kết quả là id của frameLayout cần đăng ký hoạt động
-     * @return Int
-     */
-    @IdRes
-    abstract fun getIdOfFrameLayout(): Int
-
-    /**
-     * Đăng ký fragment đầu tiên hiển thị trên giao diện
-     * @return BaseFragment
-     */
-    abstract fun onCreateFirstFragment(): BaseFragment
 }
 

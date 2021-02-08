@@ -1,7 +1,7 @@
 package com.gtvt.relaxgo.base.framework.ui
 
-import android.app.Activity
 import android.os.Bundle
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 
 /**
@@ -13,11 +13,18 @@ interface SwitchFragment {
 
     /**
      *  Chuyển tới một fragment đã được xác định từ trước hoặc sẽ được tạo mới
-     *  @param fragTaget Fragment được hướng tới
+     *  @param cls Fragment được hướng tới
      *  @param intent Intent được đính kèm
      *  @return Unit
      */
-    fun <T : Fragment> startFragment(fragTaget: Class<T>, bundle: Bundle? = null) {}
+    fun <T : Fragment> startFragment(@IdRes frameId: Int, cls: Class<T>, bundle: Bundle? = null) {}
+
+    /**
+     * Khởi tạo một bundle mới khi bắt đầu 1 fragment đã tồn tại thay vì khởi tạo lại fragment
+     * @param newBundle một bundle mới
+     * @return Unit
+     */
+    fun onNewBundle(newBundle: Bundle?) {}
 
     /**
      * Đăng ký sự kiện callback khi bắt đầu một fragment khác
@@ -26,30 +33,32 @@ interface SwitchFragment {
      * @return Unit
      */
     fun <T : Fragment> startFragmentForResult(
+        @IdRes frameId: Int,
         requestCode: Int,
-        fragTaget: Class<T>,
+        cls: Class<T>,
         bundle: Bundle? = null
     ) {
     }
+
+
+    /**
+     * Cài đặt kết quả để trả về cho một fragment
+     * @return Unit
+     */
+
+    fun setResult(resultCode: Int, bundle: Bundle?) {}
+
+    /**
+     * Nhận kết quả trả về từ một fragment
+     * @return Unit
+     */
+    fun onFragmentResult(requestCode: Int, resultCode: Int, bundle: Bundle?) {}
+
 
     /**
      * Quay trở về fragment phía sau hoặc thoát ứng dụng nếu fragment đó là fragment cuối cùng
      * @return Unit
      */
-    fun popBackStack(resultCode: Int = Int.MIN_VALUE, bundle: Bundle? = null) {}
+    fun finish() {}
 
-    /**
-     * Đăng ký sự kiện chuyển đổi giữa các fragment
-     * @param switch: tham chiếu đến triệu hồi sự kiện
-     * @return Unit
-     */
-    fun setOnSwitchFragment(switch: SwitchFragment) {}
-
-
-    /**
-     *  Dùng để nhận dữ liệu từ một fragment được start trước đó
-     *  @param Bundle Nơi chứa dữ liệu truyền vào
-     *  @return Unit
-     */
-    fun onFragmentResult(requestCode: Int, resultCode: Int, bundle: Bundle?) {}
 }
