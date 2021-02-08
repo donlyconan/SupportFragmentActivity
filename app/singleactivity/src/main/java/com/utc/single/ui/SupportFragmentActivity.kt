@@ -1,14 +1,8 @@
-package com.gtvt.relaxgo.base.framework.ui
+package com.utc.single.ui
 
-import android.content.Intent
+
 import android.os.Bundle
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.commit
-import com.utc.singleoperationapp.test.FirstFragment
-import com.utc.singleoperationapp.ui.DirectInteraction
 
 /**
  * Lớp quản lý hoạt động của một activity

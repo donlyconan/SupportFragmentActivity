@@ -1,2 +1,3 @@
+include ':app:singleactivity'
 include ':app'
 rootProject.name = "SingleOperationApp"

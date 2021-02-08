@@ -5,8 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import com.gtvt.relaxgo.base.framework.ui.SupportFragmentActivity
-import com.gtvt.relaxgo.base.framework.ui.BaseFragment
+import com.utc.single.ui.SupportFragmentActivity
 import com.utc.singleoperationapp.R
 import kotlinx.android.synthetic.main.activity_main.*
 

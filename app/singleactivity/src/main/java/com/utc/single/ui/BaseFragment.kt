@@ -1,14 +1,10 @@
-package com.gtvt.relaxgo.base.framework.ui
+package com.utc.single.ui
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.IdRes
-import androidx.annotation.LongDef
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import com.utc.singleoperationapp.test.FifthFragment
-import com.utc.singleoperationapp.ui.DirectInteraction
+import com.utc.single.ui.DirectInteraction
 
 /**
  * Cài đặt các thiết lập mặc định cho một Fragment

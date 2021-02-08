@@ -1,4 +1,4 @@
-package com.utc.singleoperationapp.ui
+package com.utc.single.ui
 
 import android.os.Bundle
 

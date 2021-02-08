@@ -1,10 +1,8 @@
 package com.utc.singleoperationapp.test
 
 import android.os.Bundle
-import android.widget.RadioGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
-import com.gtvt.relaxgo.base.framework.ui.BaseFragment
+import com.utc.single.ui.BaseFragment
 import com.utc.singleoperationapp.R
 import kotlinx.android.synthetic.main.fragment_fifth.*
 
