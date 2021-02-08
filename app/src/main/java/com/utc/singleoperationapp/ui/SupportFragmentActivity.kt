@@ -44,22 +44,15 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
             runOnIfHasPermission()
         }
     }
-//
-//    override fun send(hashCode: Int, code: Int, bundle: Bundle?) {
-//        super.send(hashCode, code, bundle)
-//        val interaction =
-//            supportFragmentManager.findFragmentByTag(hashCode.toString()) as? DirectInteraction
-//        interaction?.receive(hashCode, code, bundle)
-//    }
-//
-//
-//    override fun receive(hashCode: Int, code: Int, bundle: Bundle?) {
-//        super.receive(hashCode, code, bundle)
-//        val interaction =
-//            supportFragmentManager.findFragmentByTag(hashCode.toString()) as? DirectInteraction
-//        interaction?.send(hashCode, code, bundle)
-//    }
 
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStackImmediate()
+        } else {
+            super.onBackPressed()
+        }
+    }
 
     /**********************************************************************************************/
 
