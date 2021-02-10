@@ -1,9 +1,11 @@
-package com.utc.single.ui
+package com.utc.singleoperationapp.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.utc.singleoperationapp.R
 
 /**
  * Cài đặt các thiết lập mặc định cho một Fragment
@@ -13,10 +15,30 @@ import androidx.fragment.app.commit
 abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, DirectInteraction,
     SwitchFragment {
 
+    companion object {
+        var flagsUsed = 0
+            private set
+
+        // Đánh dấu cờ đang được sử dụng của fragment
+        val ENTER_LEFT = "enter-left"
+        val ENTER_RIGHT = "enter-right"
+        val EXIT_LEFT = "exit-left"
+        val EXIT_RIGHT = "exit-right"
+
+        val Animators = mapOf<String, @IdRes Int>(
+            ENTER_RIGHT to R.anim.slide_in,
+            ENTER_LEFT to R.anim.fade_out,
+            EXIT_LEFT to R.anim.fade_in,
+            EXIT_RIGHT to R.anim.slide_out
+        )
+    }
+
     private data class Result(var resultCode: Int, var bundle: Bundle?)
 
     private var result: Result? = null
     private var interaction: DirectInteraction? = null
+    protected var animators = Animators
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -38,8 +60,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
             arguments = box.bundle
             (this as? BaseFragment)?.setDirectInteraction(this@BaseFragment)
         }
-        startNewFragment(frameId, fragment, box.getClassName())
-        return fragment
+        return handleFlag(frameId, fragment, box)
     }
 
 
@@ -54,8 +75,31 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
             (this as? BaseFragment)?.setDirectInteraction(this@BaseFragment)
             setTargetFragment(this@BaseFragment, requestCode)
         }
-        startNewFragment(frameId, fragment, box.getClassName())
-        return fragment
+        return handleFlag(frameId, fragment, box)
+    }
+
+    /**
+     * Hiển thị tất cả fragment đang bị ẩn
+     */
+    fun showAll() {
+        val sfm = requireActivity().supportFragmentManager
+        sfm.commit {
+            for (item in sfm.fragments) {
+                show(item)
+            }
+        }
+    }
+
+    override fun show() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .show(this)
+            .commit()
+    }
+
+    override fun hide() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .hide(this)
+            .commit()
     }
 
 
@@ -67,48 +111,71 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
      *  @param box
      *  @return Unit
      */
-    private fun <T : Fragment> handleFlag(@IdRes frameId: Int, fragment: T, box: Box<T>) {
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Fragment> handleFlag(@IdRes frameId: Int, fragment: T, box: Box<T>): T {
         val sfm = requireActivity().supportFragmentManager
-        var prefragment = sfm.findFragmentById(frameId) as? BaseFragment
         val target = sfm.findFragmentByTag(box.getClassName()) as? BaseFragment
+        var prefragment = sfm.findFragmentById(frameId) as? BaseFragment
+
+        // Kiểm tra hoạt động của cờ
+        if (flagsUsed == Box.FLAG_SHOW) {
+            // Xoá cờ và hiển thi toàn bộ fragment
+            showAll()
+        }
 
         when (box.flag) {
             /**
              * Nếu 1 fragment đang được thực thi và lưu lại trạng thái ở backstack
-             * thì nó sẽ được đưa nên đầu stack và hàm onNewBundle sẽ được gọi lại
+             * thì nó sẽ được hiển thị nhưng nó vẫn nằm ở đúng vị trí ban đầu của nó
+             * - Hàm này sẽ gọi đên onNewBundle
              * Giả định: A > B > C > D
              * Show:     A
              * Kết quả:  B > C > D > A
              */
-            Box.FLAG_BRING_TO_FONT -> {
+            Box.FLAG_SHOW -> {
                 if (target == null) {
                     // Bắt đầu 1 fragment mới khi target null
                     startNewFragment(frameId, fragment, box.getClassName())
                 } else {
-                    prefragment = target
                     sfm.commit {
-                        target.onNewBundle(box.bundle)
-                        show(target)
+                        for (item in sfm.fragments) {
+                            if (item::class.java != target::class.java) {
+                                hide(item)
+                            }
+                        }
                     }
+                    target.show()
+                    target.onNewBundle(box.bundle)
+                    prefragment = target
                 }
             }
+
             /**
-             * Đưa một fragment xuống cuối stack và hiển thị fragment phía sau nó đồng thời gọi
-             * tới hàm newBundle của fragment đó
-             * Giả định: A > B > C > D
-             * Hide:     D
-             * Kết quả:  D > A > B > C
+             * Bắt đầu một fragment và thay thế vị trí đầu tiên của Fragment trên đầu stack
+             * Giả định: A > B > C
+             * Start:    D
+             * Kết quả:  A > B > D
              */
-            Box.FLAG_SEND_TO_BACK -> {
+            Box.FLAG_CLEAR_TOP -> {
                 if (prefragment != null) {
-                    sfm.commit {
-                        hide(prefragment!!)
-                        prefragment = sfm.findFragmentById(frameId) as BaseFragment
-                        prefragment!!.onNewBundle(box.bundle)
-                    }
-                } else {
-                    startNewFragment(frameId, fragment, box.getClassName())
+                    sfm.popBackStack()
                 }
+                // Bắt đầu 1 fragment
+                startNewFragment(frameId, fragment, box.getClassName())
+            }
+
+            /**
+             * Viết lại lịch sử cho back stack
+             * Giả định: A > B > C
+             * Start:    D
+             * Kết quả:  D
+             */
+            Box.FLAG_CLEAR_HISTORY -> {
+                for (i in 0..sfm.backStackEntryCount - 1) {
+                    sfm.popBackStack()
+                }
+                // Bắt đầu 1 fragment
+                startNewFragment(frameId, fragment, box.getClassName())
             }
 
             /**
@@ -122,9 +189,8 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
                 if (target == null) {
                     startNewFragment(frameId, fragment, box.getClassName())
                 } else {
-                    while (target != prefragment && sfm.popBackStackImmediate()) {
-                        prefragment = sfm.findFragmentById(frameId) as BaseFragment
-                    }
+                    sfm.popBackStack(box.getClassName(), 0)
+                    prefragment = sfm.findFragmentById(frameId) as? BaseFragment
                     prefragment?.onNewBundle(box.bundle)
                 }
             }
@@ -137,8 +203,8 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
              * Giả định: A > B > D > C -> A > B > D > C > D
              */
             Box.FLAG_SINGLE_TOP -> {
-                if (prefragment != null && box.cls == prefragment!!::class.java) {
-                    prefragment!!.onNewBundle(box.bundle)
+                if (prefragment != null && box.cls == prefragment::class.java) {
+                    prefragment.onNewBundle(box.bundle)
                 } else {
                     startNewFragment(frameId, fragment, box.getClassName())
                 }
@@ -152,15 +218,22 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
             else -> {
                 startNewFragment(frameId, fragment, box.getClassName())
             }
-
         }
+
+        flagsUsed = box.flag
+        return prefragment?.run { this as T } ?: fragment
     }
 
     private fun <T : Fragment> startNewFragment(@IdRes frameId: Int, fragment: T, tag: String) {
         requireActivity().supportFragmentManager.commit {
+            // Custom animation
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.fade_out, R.anim.fade_in, R.anim.slide_out
+            )
             add(frameId, fragment, tag)
             setReorderingAllowed(true)
-            addToBackStack(null)
+            addToBackStack(tag)
         }
     }
 

@@ -1,4 +1,4 @@
-package com.utc.single.ui
+package com.utc.singleoperationapp.ui
 
 
 import android.os.Bundle
@@ -58,5 +58,17 @@ interface SwitchFragment {
      * @return Unit
      */
     fun finish() {}
+
+    /**
+     * Hiển thị fragment
+     * @return Unit
+     */
+    fun show() {}
+
+    /**
+     * Ẩn fragment hiện tại
+     * @return Unit
+     */
+    fun hide() {}
 
 }

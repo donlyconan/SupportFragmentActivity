@@ -1,8 +1,11 @@
-package com.utc.single.ui
+package com.utc.singleoperationapp.ui
 
 
 import android.os.Bundle
+import android.view.View
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 
 /**
  * Lớp quản lý hoạt động của một activity
@@ -11,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
  */
 abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layoutId), Initialzation {
 
+    private lateinit var firstName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +32,22 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
     }
 
 
+    open fun <T : BaseFragment> initFragment(@IdRes frameId: Int, cls: Class<T>): BaseFragment? {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            firstName = cls.name
+            return cls.newInstance().apply {
+                supportFragmentManager.beginTransaction()
+                    .add(frameId,this, firstName)
+                    .setReorderingAllowed(true)
+                    .addToBackStack(firstName)
+                    .commit()
+            }
+        } else {
+            return supportFragmentManager.findFragmentByTag(firstName) as? BaseFragment
+        }
+    }
+
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -41,14 +61,41 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
 
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
+        if (supportFragmentManager.backStackEntryCount > 1) {
+            if (BaseFragment.flagsUsed == Box.FLAG_SHOW) {
+                showAll()
+            }
             supportFragmentManager.popBackStackImmediate()
         } else {
-            super.onBackPressed()
+            super.finish()
+        }
+    }
+
+    /**
+     * Hiển thị tất cả fragment đang bị ẩn
+     */
+    fun showAll() {
+        val sfm = supportFragmentManager
+        sfm.commit {
+            for (item in sfm.fragments) {
+                show(item)
+            }
         }
     }
 
     /**********************************************************************************************/
+
+//    /**
+//     * Đăng ký fragment cho giao diện đầu tiên của hoạt động
+//     * @return Unit
+//     */
+//    open fun <T : Fragment> initFragment(@IdRes frameId: Int, cls: Class<T>) {
+//        supportFragmentManager.commit {
+//            add(cls.newInstance(), cls.name)
+//            setReorderingAllowed(true)
+//            addToBackStack(null)
+//        }
+//    }
 
 
     /**

@@ -8,6 +8,20 @@
 
 
     <TextView
+        android:id="@+id/textMessage2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="Không có thông điệp nào!"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/textMessage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/textMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,8 +32,10 @@
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.214" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -34,33 +50,54 @@
 
         <Button
             android:id="@+id/btnStartFrag"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_radius_8dp"
-            android:backgroundTint="#FFAB00"
-            android:onClick="onClick"
+            style="@style/buttoncustom"
             android:text="Start Second Fragment" />
 
         <Button
+            android:id="@+id/btnSingleTop"
+            style="@style/buttoncustom"
+            android:layout_marginTop="10dp"
+            android:text="SINGLE TOP" />
+
+        <Button
+            android:id="@+id/btnClearTop"
+            style="@style/buttoncustom"
+            android:layout_marginTop="10dp"
+            android:text="CLEAR TOP" />
+
+        <Button
+            android:id="@+id/btnSingleTask"
+            style="@style/buttoncustom"
+            android:layout_marginTop="10dp"
+            android:text="Single Task" />
+
+
+        <Button
+            android:id="@+id/btnClearHisotry"
+            style="@style/buttoncustom"
+            android:layout_marginTop="10dp"
+            android:text="Clear Hisotry" />
+
+        <Button
+            android:id="@+id/btnToFont"
+            style="@style/buttoncustom"
+            android:layout_marginTop="10dp"
+            android:text="Bring To Font" />
+
+        <Button
+            android:id="@+id/btnToBack"
+            style="@style/buttoncustom"
+            android:layout_marginTop="10dp"
+            android:text="Send To Back" />
+
+
+        <Button
             android:id="@+id/btnStartFragForResult"
+            style="@style/buttoncustom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@drawable/shape_radius_8dp"
-            android:backgroundTint="#FFAB00"
-            android:onClick="onClick"
-
             android:text="Start Second Fragment for result" />
-
-        <TextView
-            android:id="@+id/textMessage2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center"
-            android:text="Không có thông điệp nào!"
-            android:textColor="#fff"
-            android:textSize="16sp" />
 
     </LinearLayout>
 

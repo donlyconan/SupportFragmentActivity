@@ -32,20 +32,21 @@
 
         <Button
             android:id="@+id/btnClose"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_radius_8dp"
-            android:backgroundTint="#FFAB00"
-            android:onClick="onClick"
+            style="@style/buttoncustom"
             android:text="Close Second Activity" />
+
+
+        <Button
+            android:layout_marginTop="10dp"
+            android:id="@+id/btnStartFirFrag"
+            style="@style/buttoncustom"
+            android:text="Start First Fragment" />
+
 
         <Button
             android:layout_marginTop="10dp"
             android:id="@+id/btnSendData"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_radius_8dp"
-            android:backgroundTint="#FFAB00"
+            style="@style/buttoncustom"
             android:onClick="onClick"
             android:text="Send data to FirstFragment" />
 

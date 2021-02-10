@@ -1,36 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".test.MainActivity">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
 
-    <TableRow>
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        tools:context=".test.MainActivity">
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_weight="1"
-            android:onClick="onClick"
-            android:text="ADD" />
+        <TableRow android:layout_marginTop="5dp">
 
-        <Button
-            android:id="@+id/btnPop"
-            android:layout_weight="1"
-            android:onClick="onClick"
-            android:text="POP" />
+            <Button
+                android:id="@+id/btnAdd"
+                style="@style/buttoncustom"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="ADD" />
 
-        <Button
-            android:id="@+id/btnRemove"
-            android:layout_weight="1"
-            android:onClick="onClick"
-            android:text="Remove" />
-    </TableRow>
+            <Button
+                android:id="@+id/btnPop"
+                style="@style/buttoncustom"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="POP" />
+
+            <Button
+                android:id="@+id/btnRemove"
+                android:layout_weight="1"
+                style="@style/buttoncustom"
+                android:layout_marginStart="8dp"
+                android:onClick="onClick"
+                android:text="Remove" />
+        </TableRow>
+
+<!--        <TableRow android:layout_marginTop="5dp">-->
+
+<!--            <Button-->
+<!--                android:id="@+id/btnStartFrag"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:onClick="onClick"-->
+<!--                android:text="Start Second Fragment" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/btnSingleTop"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:onClick="onClick"-->
+<!--                android:text="S.TOP" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/btnClearTop"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:layout_marginStart="5dp"-->
+<!--                android:onClick="onClick"-->
+<!--                android:text="CLEAR TOP" />-->
+
+
+<!--        </TableRow>-->
+
+<!--        <TableRow android:layout_marginTop="5dp">-->
+
+<!--            <Button-->
+<!--                android:id="@+id/btnSingleTask"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:onClick="onClick"-->
+<!--                android:lines="1"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="S.Task" />-->
+
+
+<!--            <Button-->
+<!--                android:id="@+id/btnClearHisotry"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:onClick="onClick"-->
+<!--                android:text="Clear Hisotry" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/btnToFont"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:onClick="onClick"-->
+<!--                android:text="Bring To Font" />-->
+
+<!--        </TableRow>-->
+
+<!--        <TableRow android:layout_marginTop="5dp">-->
+
+<!--            <Button-->
+<!--                android:id="@+id/btnToBack"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="Send To Back"-->
+<!--                android:onClick="onClick" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/btnStartFragForResult"-->
+<!--                style="@style/buttoncustom"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:onClick="onClick"-->
+<!--                android:text="Start Second Fragment for result" />-->
+<!--        </TableRow>-->
+
+    </TableLayout>
 
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-</TableLayout>
+</LinearLayout>
