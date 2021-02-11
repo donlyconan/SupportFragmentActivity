@@ -21,22 +21,30 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation,
             private set
 
         // Đánh dấu cờ đang được sử dụng của fragment
-//        val ENTER_LEFT = "enter-left"
-//        val ENTER_RIGHT = "enter-right"
-//        val EXIT_LEFT = "exit-left"
-//        val EXIT_RIGHT = "exit-right"
+        val ENTER_LEFT = "enter-left"
+        val ENTER_RIGHT = "enter-right"
+        val EXIT_LEFT = "exit-left"
+        val EXIT_RIGHT = "exit-right"
 
-//        val Animators = mapOf<String, @IdRes Int>(
-//            ENTER_RIGHT to R.anim.slide_in,
-//            ENTER_LEFT to R.anim.fade_out,
-//            EXIT_LEFT to R.anim.fade_in,
-//            EXIT_RIGHT to R.anim.slide_out
-//        )
+        val Animators = mapOf<String, @IdRes Int>(
+            /**
+             *   R.anim.slide_in,
+            R.anim.fade_out,
+            R.anim.fade_in,
+            R.anim.slide_out
+             */
+            ENTER_RIGHT to R.anim.slide_in,
+            EXIT_RIGHT to R.anim.fade_out,
+            ENTER_LEFT to R.anim.fade_in,
+            EXIT_LEFT to R.anim.slide_out
+        )
     }
 
     private data class Result(var resultCode: Int, var bundle: Bundle?)
+
     private var result: Result? = null
     private var interactor: DirectInteraction? = null
+    val animator = Animators
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -142,6 +150,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation,
                             val item = sfm.fragments[i]
                             if (item::class.java != target::class.java) {
                                 hide(item)
+                            } else {
                                 break
                             }
                         }
@@ -165,7 +174,6 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation,
                         for (item in sfm.fragments) {
                             if (item::class.java == target::class.java) {
                                 hide(item)
-                                break
                             }
                         }
                     }
@@ -253,10 +261,8 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation,
         requireActivity().supportFragmentManager.commit {
             // Custom animation
             setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.fade_out,
-                R.anim.fade_in,
-                R.anim.slide_out
+                animator[ENTER_RIGHT]!!, animator[EXIT_RIGHT]!!,
+                animator[ENTER_LEFT]!!, animator[EXIT_LEFT]!!
             )
             add(frameId, fragment, tag)
             setReorderingAllowed(true)

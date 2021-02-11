@@ -66,7 +66,7 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
             }
             supportFragmentManager.popBackStackImmediate()
         } else {
-            super.onBackPressed()
+            super.finish()
         }
     }
 
