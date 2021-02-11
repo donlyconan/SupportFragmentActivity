@@ -89,7 +89,7 @@ class FirstFragment : BaseFragment(R.layout.fragment_first), View.OnClickListene
                 val box = Box(
                     SecondFragment::class.java,
                     bundleOf(EXTRA_DATA to "To Font"),
-                    Box.FLAG_SHOW
+                    Box.FLAG_BRING_TO_FRONT
                 )
                 startFragment(R.id.frameLayout, box)
             }

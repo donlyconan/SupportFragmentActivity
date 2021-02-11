@@ -12,7 +12,7 @@ interface Initialzation {
 
 
     /**
-     * Chạy hàm khởi tạo sau @OnCreateView
+     * Chạy hàm khởi tao UI
      * @return Unit
      */
     fun initialize(bundle: Bundle?) {}

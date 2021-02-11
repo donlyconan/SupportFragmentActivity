@@ -8,7 +8,8 @@ class Box<T : Fragment> {
     companion object {
         const val FLAG_CLEAR_TOP = 0xfb007
         const val FLAG_CLEAR_HISTORY = 0xfb008
-        const val FLAG_SHOW = 0xfb001
+        const val FLAG_BRING_TO_FRONT = 0xfb001
+        const val FLAG_HIDE = 0xfb002
         const val FLAG_SINGLE_TOP = 0xfb003
         const val FLAG_SINGLE_TASK = 0xfb005
         const val FLAG_STANDARD = 0xfb006

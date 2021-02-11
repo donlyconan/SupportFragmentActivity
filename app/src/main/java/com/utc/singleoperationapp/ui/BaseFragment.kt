@@ -1,9 +1,9 @@
 package com.utc.singleoperationapp.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import com.utc.singleoperationapp.R
 
@@ -12,7 +12,8 @@ import com.utc.singleoperationapp.R
  * @author Donly Conan
  * @since 04/02/2021
  */
-abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, DirectInteraction,
+abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation,
+    DirectInteraction,
     SwitchFragment {
 
     companion object {
@@ -20,30 +21,30 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
             private set
 
         // Đánh dấu cờ đang được sử dụng của fragment
-        val ENTER_LEFT = "enter-left"
-        val ENTER_RIGHT = "enter-right"
-        val EXIT_LEFT = "exit-left"
-        val EXIT_RIGHT = "exit-right"
+//        val ENTER_LEFT = "enter-left"
+//        val ENTER_RIGHT = "enter-right"
+//        val EXIT_LEFT = "exit-left"
+//        val EXIT_RIGHT = "exit-right"
 
-        val Animators = mapOf<String, @IdRes Int>(
-            ENTER_RIGHT to R.anim.slide_in,
-            ENTER_LEFT to R.anim.fade_out,
-            EXIT_LEFT to R.anim.fade_in,
-            EXIT_RIGHT to R.anim.slide_out
-        )
+//        val Animators = mapOf<String, @IdRes Int>(
+//            ENTER_RIGHT to R.anim.slide_in,
+//            ENTER_LEFT to R.anim.fade_out,
+//            EXIT_LEFT to R.anim.fade_in,
+//            EXIT_RIGHT to R.anim.slide_out
+//        )
     }
 
     private data class Result(var resultCode: Int, var bundle: Bundle?)
-
     private var result: Result? = null
-    private var interaction: DirectInteraction? = null
-    protected var animators = Animators
+    private var interactor: DirectInteraction? = null
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         // Khởi tạo các cài đặt ban đầu cho fragment
         initialize(savedInstanceState)
+
         // Chạy trình đăng ký sự kiện
         register(savedInstanceState)
     }
@@ -52,6 +53,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
     override fun onNewBundle(newBundle: Bundle?) {
         super.onNewBundle(newBundle)
         arguments?.putAll(newBundle)
+        initialize(newBundle)
     }
 
 
@@ -80,15 +82,15 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
 
     /**
      * Hiển thị tất cả fragment đang bị ẩn
+     * @return Unit
      */
-    fun showAll() {
+    fun FragmentTransaction.showAll() {
         val sfm = requireActivity().supportFragmentManager
-        sfm.commit {
-            for (item in sfm.fragments) {
-                show(item)
-            }
+        for (item in sfm.fragments) {
+            show(item)
         }
     }
+
 
     override fun show() {
         requireActivity().supportFragmentManager.beginTransaction()
@@ -111,41 +113,62 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
      *  @param box
      *  @return Unit
      */
-    @Suppress("UNCHECKED_CAST")
     private fun <T : Fragment> handleFlag(@IdRes frameId: Int, fragment: T, box: Box<T>): T {
         val sfm = requireActivity().supportFragmentManager
         val target = sfm.findFragmentByTag(box.getClassName()) as? BaseFragment
         var prefragment = sfm.findFragmentById(frameId) as? BaseFragment
 
-        // Kiểm tra hoạt động của cờ
-        if (flagsUsed == Box.FLAG_SHOW) {
-            // Xoá cờ và hiển thi toàn bộ fragment
-            showAll()
+        // Hiển thị fragment
+        if (flagsUsed == Box.FLAG_HIDE || flagsUsed == Box.FLAG_BRING_TO_FRONT) {
+            sfm.commit { showAll() }
         }
 
         when (box.flag) {
             /**
              * Nếu 1 fragment đang được thực thi và lưu lại trạng thái ở backstack
              * thì nó sẽ được hiển thị nhưng nó vẫn nằm ở đúng vị trí ban đầu của nó
-             * - Hàm này sẽ gọi đên onNewBundle
+             * - Hàm này sẽ gọi đến onNewBundle
              * Giả định: A > B > C > D
              * Show:     A
-             * Kết quả:  B > C > D > A
+             * Kết quả:  A [> B > C > D] : B, C, D đã bị ẩn
              */
-            Box.FLAG_SHOW -> {
+            Box.FLAG_BRING_TO_FRONT -> {
                 if (target == null) {
-                    // Bắt đầu 1 fragment mới khi target null
+                    // Bắt đầu 1 fragment mới khi không tìm thấy lớp cần tạo
                     startNewFragment(frameId, fragment, box.getClassName())
                 } else {
                     sfm.commit {
-                        for (item in sfm.fragments) {
+                        for (i in sfm.fragments.size - 1 downTo 0) {
+                            val item = sfm.fragments[i]
                             if (item::class.java != target::class.java) {
                                 hide(item)
+                                break
                             }
                         }
                     }
                     target.show()
                     target.onNewBundle(box.bundle)
+                    prefragment = target
+                }
+            }
+
+            /**
+             * Nếu 1 fragment đang được thực thi và lưu lại trạng thái ở backstack
+             * thì nó sẽ ẩn, nhưng nó vẫn nằm ở đúng vị trí ban đầu của nó
+             * Giả định: A > B > C > D > A
+             * Hide:     A
+             * Kết quả:  [A >] B > C > D [> A]: instance của fragment A bị ẩn đi
+             */
+            Box.FLAG_HIDE -> {
+                if (target != null) {
+                    sfm.commit {
+                        for (item in sfm.fragments) {
+                            if (item::class.java == target::class.java) {
+                                hide(item)
+                                break
+                            }
+                        }
+                    }
                     prefragment = target
                 }
             }
@@ -186,6 +209,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
              * Kết quả:  A > B
              */
             Box.FLAG_SINGLE_TASK -> {
+                sfm.commit { showAll() }
                 if (target == null) {
                     startNewFragment(frameId, fragment, box.getClassName())
                 } else {
@@ -203,6 +227,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
              * Giả định: A > B > D > C -> A > B > D > C > D
              */
             Box.FLAG_SINGLE_TOP -> {
+                sfm.commit { showAll() }
                 if (prefragment != null && box.cls == prefragment::class.java) {
                     prefragment.onNewBundle(box.bundle)
                 } else {
@@ -221,7 +246,7 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
         }
 
         flagsUsed = box.flag
-        return prefragment?.run { this as T } ?: fragment
+        return prefragment?.run { this as? T } ?: fragment
     }
 
     private fun <T : Fragment> startNewFragment(@IdRes frameId: Int, fragment: T, tag: String) {
@@ -229,7 +254,9 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
             // Custom animation
             setCustomAnimations(
                 R.anim.slide_in,
-                R.anim.fade_out, R.anim.fade_in, R.anim.slide_out
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out
             )
             add(frameId, fragment, tag)
             setReorderingAllowed(true)
@@ -256,11 +283,11 @@ abstract class BaseFragment(layoutId: Int) : Fragment(layoutId), Initialzation, 
 
     override fun send(code: Int, bundle: Bundle?) {
         super.send(code, bundle)
-        this.interaction?.receive(code, bundle)
+        this.interactor?.receive(code, bundle)
     }
 
 
     fun setDirectInteraction(interaction: DirectInteraction?) {
-        this.interaction = interaction
+        this.interactor = interaction
     }
 }

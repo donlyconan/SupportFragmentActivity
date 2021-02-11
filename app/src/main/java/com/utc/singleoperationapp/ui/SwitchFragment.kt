@@ -60,7 +60,7 @@ interface SwitchFragment {
     fun finish() {}
 
     /**
-     * Hiển thị fragment
+     * Hiển thị fragment hiện tại
      * @return Unit
      */
     fun show() {}

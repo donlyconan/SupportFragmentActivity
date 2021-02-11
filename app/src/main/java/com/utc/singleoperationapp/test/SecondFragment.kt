@@ -35,7 +35,7 @@ class SecondFragment : BaseFragment(R.layout.fragment_second), View.OnClickListe
                 val box = Box(
                     FirstFragment::class.java,
                     bundleOf(FirstFragment.EXTRA_DATA to "Single Task"),
-                    Box.FLAG_SHOW
+                    Box.FLAG_BRING_TO_FRONT
                 )
                 startFragment(R.id.frameLayout, box)
             }

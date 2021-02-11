@@ -2,7 +2,6 @@ package com.utc.singleoperationapp.ui
 
 
 import android.os.Bundle
-import android.view.View
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
@@ -27,7 +26,7 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
             runOnIfHasPermission(savedInstanceState)
         }
 
-        // Đăng ký các sự kiên liên quan tới ViewModel
+        // Đăng ký các sự kiên liên quan tới ViewModel, sự kiện
         register(savedInstanceState)
     }
 
@@ -37,7 +36,7 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
             firstName = cls.name
             return cls.newInstance().apply {
                 supportFragmentManager.beginTransaction()
-                    .add(frameId,this, firstName)
+                    .add(frameId, this, firstName)
                     .setReorderingAllowed(true)
                     .addToBackStack(firstName)
                     .commit()
@@ -62,12 +61,12 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 1) {
-            if (BaseFragment.flagsUsed == Box.FLAG_SHOW) {
+            if (BaseFragment.flagsUsed == Box.FLAG_BRING_TO_FRONT || BaseFragment.flagsUsed == Box.FLAG_HIDE) {
                 showAll()
             }
             supportFragmentManager.popBackStackImmediate()
         } else {
-            super.finish()
+            super.onBackPressed()
         }
     }
 
@@ -84,18 +83,6 @@ abstract class SupportFragmentActivity(layoutId: Int) : AppCompatActivity(layout
     }
 
     /**********************************************************************************************/
-
-//    /**
-//     * Đăng ký fragment cho giao diện đầu tiên của hoạt động
-//     * @return Unit
-//     */
-//    open fun <T : Fragment> initFragment(@IdRes frameId: Int, cls: Class<T>) {
-//        supportFragmentManager.commit {
-//            add(cls.newInstance(), cls.name)
-//            setReorderingAllowed(true)
-//            addToBackStack(null)
-//        }
-//    }
 
 
     /**
